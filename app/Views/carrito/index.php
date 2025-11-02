@@ -198,14 +198,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             fetch('<?= site_url('carrito/finalizar') ?>', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     window.open('<?= site_url('carrito/mostrarQR') ?>', '_blank');
                     window.location.href = '<?= site_url('pedido') ?>';
+                } else {
+                    alert('Error al procesar el pedido: ' + (data.message || 'Intenta nuevamente'));
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar el pedido. Por favor, intenta nuevamente.');
             });
         }
     });

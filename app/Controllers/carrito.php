@@ -120,6 +120,28 @@ class Carrito extends Controller
             return redirect()->to('/login')->with('error', 'Debes iniciar sesión para finalizar tu pedido');
         }
 
+        // Obtener el ID del usuario de múltiples formas para asegurar que funcione
+        $usuario_id = auth()->id();
+
+        // Debug: Log para diagnóstico
+        log_message('debug', 'Usuario ID desde auth()->id(): ' . var_export($usuario_id, true));
+        log_message('debug', 'Usuario loggeado: ' . var_export(auth()->loggedIn(), true));
+
+        // Si auth()->id() falla, intentar obtener desde session
+        if ($usuario_id === null) {
+            $user = auth()->user();
+            if ($user) {
+                $usuario_id = $user->id;
+                log_message('debug', 'Usuario ID desde auth()->user()->id: ' . $usuario_id);
+            }
+        }
+
+        // Última verificación
+        if ($usuario_id === null) {
+            log_message('error', 'No se pudo obtener usuario_id incluso estando autenticado');
+            return redirect()->to('/login')->with('error', 'Error de sesión. Por favor, inicia sesión nuevamente.');
+        }
+
         $carrito = $this->session->get('carrito') ?? [];
 
         if (empty($carrito)) {
@@ -147,7 +169,7 @@ class Carrito extends Controller
             $total += $subtotal;
 
             $pedidoData = [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => $usuario_id,
                 'plato_id' => $plato_id,
                 'cantidad' => $item['cantidad'],
                 'total' => $subtotal,
@@ -155,6 +177,7 @@ class Carrito extends Controller
                 'notas' => $notas . $item['nombre'] . ' x' . $item['cantidad']
             ];
 
+            log_message('debug', 'Datos del pedido a insertar: ' . json_encode($pedidoData));
             $db->table('pedidos')->insert($pedidoData);
         }
 
