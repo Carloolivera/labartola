@@ -114,6 +114,11 @@ class Carrito extends Controller
 
     public function finalizar()
     {
+        // Verificar que el usuario esté autenticado
+        if (!auth()->loggedIn()) {
+            return redirect()->to('/login')->with('error', 'Debes iniciar sesión para finalizar tu pedido');
+        }
+
         $carrito = $this->session->get('carrito') ?? [];
 
         if (empty($carrito)) {
@@ -126,7 +131,7 @@ class Carrito extends Controller
         $forma_pago = $this->request->getPost('forma_pago');
 
         $db = \Config\Database::connect();
-        
+
         $notas = "A nombre de: {$nombre_cliente}\n";
         $notas .= "Tipo de entrega: {$tipo_entrega}\n";
         if ($tipo_entrega === 'delivery' && !empty($direccion)) {
@@ -139,9 +144,9 @@ class Carrito extends Controller
         foreach ($carrito as $plato_id => $item) {
             $subtotal = $item['precio'] * $item['cantidad'];
             $total += $subtotal;
-            
+
             $pedidoData = [
-                'usuario_id' => auth()->loggedIn() ? auth()->id() : null,
+                'usuario_id' => auth()->id(),
                 'plato_id' => $plato_id,
                 'cantidad' => $item['cantidad'],
                 'total' => $subtotal,
