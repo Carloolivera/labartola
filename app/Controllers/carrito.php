@@ -7,6 +7,7 @@ use CodeIgniter\Controller;
 class Carrito extends Controller
 {
     protected $session;
+    protected $helpers = ['auth'];
 
     public function __construct()
     {

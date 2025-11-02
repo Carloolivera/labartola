@@ -15,7 +15,7 @@ $routes->post('carrito/agregar', 'Carrito::agregar');
 $routes->post('carrito/actualizar', 'Carrito::actualizar');
 $routes->post('carrito/eliminar', 'Carrito::eliminar');
 $routes->post('carrito/vaciar', 'Carrito::vaciar');
-$routes->post('carrito/finalizar', 'Carrito::finalizar');
+$routes->post('carrito/finalizar', 'Carrito::finalizar', ['filter' => 'auth']);
 $routes->get('carrito/mostrarQR', 'Carrito::mostrarQR');
 $routes->get('carrito/getCount', 'Carrito::getCount');
 
