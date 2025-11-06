@@ -8,29 +8,31 @@ class PlatoModel extends Model
 {
     protected $table      = 'platos';
     protected $primaryKey = 'id';
-    
+
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
-    
+
     protected $allowedFields = [
         'nombre',
         'descripcion',
         'precio',
         'categoria',
         'disponible',
-        'imagen'
+        'imagen',
+        'stock',
+        'stock_ilimitado'
     ];
-    
+
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    
+
     protected $validationRules = [
         'nombre' => 'required|min_length[3]|max_length[255]',
-        'precio' => 'required|decimal',
+        'precio' => 'required|numeric',
     ];
-    
+
     protected $validationMessages = [
         'nombre' => [
             'required' => 'El nombre del plato es obligatorio',

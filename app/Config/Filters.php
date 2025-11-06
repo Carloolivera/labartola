@@ -16,18 +16,19 @@ use CodeIgniter\Filters\SecureHeaders;
 class Filters extends BaseFilters
 {
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
-        'auth'          => \CodeIgniter\Shield\Filters\SessionAuth::class,
-        'permission'    => \CodeIgniter\Shield\Filters\PermissionFilter::class,
-        'group'         => \CodeIgniter\Shield\Filters\GroupFilter::class,
+        'csrf'              => CSRF::class,
+        'toolbar'           => DebugToolbar::class,
+        'honeypot'          => Honeypot::class,
+        'invalidchars'      => InvalidChars::class,
+        'secureheaders'     => SecureHeaders::class,
+        'cors'              => Cors::class,
+        'forcehttps'        => ForceHTTPS::class,
+        'pagecache'         => PageCache::class,
+        'performance'       => PerformanceMetrics::class,
+        'auth'              => \CodeIgniter\Shield\Filters\SessionAuth::class,
+        'permission'        => \CodeIgniter\Shield\Filters\PermissionFilter::class,
+        'group'             => \CodeIgniter\Shield\Filters\GroupFilter::class,
+        'adminOrVendedor'   => \App\Filters\AdminOrVendedorFilter::class,
     ];
 
     public array $required = [
@@ -57,5 +58,16 @@ class Filters extends BaseFilters
 
     public array $methods = [];
 
-    public array $filters = [];
+    public array $filters = [
+        'group:admin' => [
+            'before' => [
+                'admin/*',
+            ],
+        ],
+        'group:vendedor' => [
+            'before' => [
+                'vendedor/*',
+            ],
+        ],
+    ];
 }
