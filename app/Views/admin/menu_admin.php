@@ -35,8 +35,8 @@
         <?php foreach ($platos as $plato): ?>
           <div class="col-md-6 col-lg-4">
             <div class="card bg-dark text-light h-100">
-              <?php if ($plato['imagen']): ?>
-                <img src="<?= base_url('assets/images/platos/' . $plato['imagen']) ?>" 
+              <?php if (!empty($plato['imagen'])): ?>
+                <img src="<?= base_url('uploads/platos/' . $plato['imagen']) ?>" 
                      class="card-img-top" 
                      alt="<?= esc($plato['nombre']) ?>"
                      style="height: 200px; object-fit: cover;">
@@ -68,10 +68,11 @@
                      class="btn btn-sm btn-outline-warning flex-fill">
                     <i class="bi bi-pencil"></i> Editar
                   </a>
-                  <button class="btn btn-sm btn-outline-danger" 
-                          onclick="confirmarEliminar(<?= $plato['id'] ?>)">
-                    <i class="bi bi-trash"></i>
-                  </button>
+                  <a href="<?= site_url('admin/menu/eliminar/' . $plato['id']) ?>" 
+                     class="btn btn-sm btn-outline-danger"
+                     onclick="return confirm('¿Eliminar este plato?')">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </a>
                 </div>
               </div>
             </div>
@@ -81,13 +82,5 @@
     </div>
   </div>
 </section>
-
-<script>
-function confirmarEliminar(id) {
-  if (confirm('¿Estás seguro de eliminar este plato? Esta acción no se puede deshacer.')) {
-    window.location.href = '<?= site_url('admin/menu/eliminar/') ?>' + id;
-  }
-}
-</script>
 
 <?= $this->endSection() ?>

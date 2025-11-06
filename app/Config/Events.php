@@ -14,13 +14,6 @@ use CodeIgniter\HotReloader\HotReloader;
  * modifying or extending core files. This file provides a central
  * location to define your events, though they can always be added
  * at run-time, also, if needed.
- *
- * You create code that can execute by subscribing to events with
- * the 'on()' method. This accepts any form of callable, including
- * Closures, that will be executed when the event is triggered.
- *
- * Example:
- *      Events::on('create', [$myInstance, 'myMethod']);
  */
 
 Events::on('pre_system', static function (): void {
@@ -40,11 +33,11 @@ Events::on('pre_system', static function (): void {
      * --------------------------------------------------------------------
      * Debug Toolbar Listeners.
      * --------------------------------------------------------------------
-     * If you delete, they will no longer be collected.
      */
     if (CI_DEBUG && ! is_cli()) {
         Events::on('DBQuery', 'CodeIgniter\Debug\Toolbar\Collectors\Database::collect');
         service('toolbar')->respond();
+
         // Hot Reload route - for framework use on the hot reloader.
         if (ENVIRONMENT === 'development') {
             service('routes')->get('__hot-reload', static function (): void {
@@ -53,11 +46,15 @@ Events::on('pre_system', static function (): void {
         }
     }
 });
-Events::on('register', static function ($user) {
-    $db = \Config\Database::connect();
-    $db->table('auth_groups_users')->insert([
-        'user_id' => $user->id,
-        'group' => 'cliente',
-        'created_at' => date('Y-m-d H:i:s')
-    ]);
+
+/*
+ * --------------------------------------------------------------------
+ * Shield "register" event customization.
+ * --------------------------------------------------------------------
+ * Shield ya asigna automáticamente el grupo "cliente" al registrar un nuevo usuario.
+ * Si quisieras realizar acciones adicionales al registrar, hacelo acá SIN reinsertar en auth_groups_users.
+ */
+Events::on('register', static function ($user): void {
+    // Ejemplo opcional: loguear o enviar notificación, pero no volver a insertar grupo.
+    // log_message('info', 'Nuevo usuario registrado: ' . $user->email);
 });
