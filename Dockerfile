@@ -28,11 +28,19 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 # Copiar configuración personalizada de Apache
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-# Configurar permisos para writable
-RUN mkdir -p /var/www/html/writable && chown -R www-data:www-data /var/www/html
-
 # Exponer puerto 80
 EXPOSE 80
 
+# Script de inicio personalizado
+RUN echo '#!/bin/bash\n\
+mkdir -p /var/www/html/writable/cache\n\
+mkdir -p /var/www/html/writable/logs\n\
+mkdir -p /var/www/html/writable/session\n\
+mkdir -p /var/www/html/writable/uploads\n\
+chown -R www-data:www-data /var/www/html/writable\n\
+chmod -R 775 /var/www/html/writable\n\
+apache2-foreground' > /usr/local/bin/start.sh \
+    && chmod +x /usr/local/bin/start.sh
+
 # Comando por defecto
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start.sh"]
