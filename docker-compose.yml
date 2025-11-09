@@ -27,8 +27,10 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html
-      - ./writable:/var/www/html/writable
+      # Optimización para Windows: usar cached para mejor performance en lectura
+      - .:/var/www/html:cached
+      # writable debe ser delegated para permitir escritura rápida
+      - ./writable:/var/www/html/writable:delegated
     environment:
       - CI_ENVIRONMENT=development
     depends_on:
