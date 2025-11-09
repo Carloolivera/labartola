@@ -13,6 +13,7 @@
       "Bash(gh pr view:*)",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
+<<<<<<< HEAD
       "Bash(docker-compose ps:*)",
       "Bash(docker-compose restart:*)",
       "Bash(docker-compose logs:*)",
@@ -22,6 +23,35 @@
       "Bash(docker-compose up:*)",
       "Bash(php spark make:migration:*)",
       "Bash(php spark migrate:*)"
+=======
+      "Bash(if [ -f .env ])",
+      "Bash(then grep -A2 \"GOOGLE_CLIENT\" .env)",
+      "Bash(else echo \"Archivo .env no existe\")",
+      "Bash(fi)",
+      "Bash(php spark:*)",
+      "Bash(php -r:*)",
+      "Bash(mysql:*)",
+      "Bash(php fix_migration.php:*)",
+      "Bash(curl:*)",
+      "Bash(php -l:*)",
+      "Bash(pkill:*)",
+      "Bash(timeout 5 php:*)",
+      "Bash(docker ps:*)",
+      "Bash(taskkill /F /FI \"IMAGENAME eq php.exe\" /FI \"WINDOWTITLE eq *spark*\")",
+      "Bash(php test_db.php:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill /F /PID 17032)",
+      "Bash(taskkill:*)",
+      "Bash(taskkill /F /PID 17892)",
+      "Bash(powershell:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(docker volume:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker logs:*)",
+      "Bash(grep:*)"
+>>>>>>> 51028a9be6c3ff3512e51dcc6885d422e227cd31
     ],
     "deny": [],
     "ask": []
