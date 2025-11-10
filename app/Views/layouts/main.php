@@ -132,6 +132,99 @@
       margin-right: 12px;
       flex-shrink: 0;
     }
+
+    /* Toast Notifications - Sistema Global */
+    .custom-toast {
+      min-width: 320px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: slideInRight 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .custom-toast.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border-left: 4px solid #1e7e34;
+    }
+
+    .custom-toast.error {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+      border-left: 4px solid #bd2130;
+    }
+
+    .custom-toast.warning {
+      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      color: #000;
+      border-left: 4px solid #d39e00;
+    }
+
+    .custom-toast.info {
+      background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+      color: white;
+      border-left: 4px solid #0c5460;
+    }
+
+    .custom-toast-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .custom-toast-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .custom-toast-message {
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .custom-toast-close {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 1.3rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .custom-toast-close:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
@@ -152,10 +245,8 @@
           <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')) : ?>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/menu') ?>">Gestión Menú</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/pedidos') ?>">Pedidos</a></li>
-            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/caja') ?>">Caja</a></li>
-            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/stock') ?>">Stock</a></li>
-            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/cupones') ?>">Cupones</a></li>
-            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/analytics') ?>">Analytics</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/inventario') ?>">📦 Inventario</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?= site_url('admin/caja-chica') ?>">💰 Caja Chica</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('usuario') ?>">Usuarios</a></li>
             <li class="nav-item position-relative">
               <a class="nav-link notification-bell" id="notificationBell" onclick="toggleNotifications()">
@@ -226,6 +317,9 @@
     </div>
   </nav>
 
+  <!-- Toast Container Global -->
+  <div id="toastContainer" style="position: fixed; top: 80px; right: 20px; z-index: 9999;"></div>
+
   <main>
     <?= $this->renderSection('content') ?>
   </main>
@@ -243,10 +337,62 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Sistema de Toast Global
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `custom-toast ${type}`;
+
+      const icons = {
+        success: 'check-circle-fill',
+        error: 'x-circle-fill',
+        warning: 'exclamation-triangle-fill',
+        info: 'info-circle-fill'
+      };
+
+      toast.innerHTML = `
+        <div class="custom-toast-content">
+          <i class="bi bi-${icons[type]} custom-toast-icon"></i>
+          <span class="custom-toast-message">${message}</span>
+        </div>
+        <button class="custom-toast-close" onclick="this.parentElement.remove()" aria-label="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto-remover después de 4 segundos
+      setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       actualizarContadorCarrito();
+
+      // Mostrar mensajes flash de sesión como toast
+      <?php if (session()->has('success')): ?>
+        showToast('<?= addslashes(session('success')) ?>', 'success');
+      <?php endif; ?>
+
+      <?php if (session()->has('error')): ?>
+        showToast('<?= addslashes(session('error')) ?>', 'error');
+      <?php endif; ?>
+
+      <?php if (session()->has('warning')): ?>
+        showToast('<?= addslashes(session('warning')) ?>', 'warning');
+      <?php endif; ?>
+
+      <?php if (session()->has('info')): ?>
+        showToast('<?= addslashes(session('info')) ?>', 'info');
+      <?php endif; ?>
+
       <?php if (auth()->loggedIn()): ?>
-      iniciarNotificaciones();
+      // iniciarNotificaciones(); // DESHABILITADO - Causa carga infinita
       <?php endif; ?>
     });
 

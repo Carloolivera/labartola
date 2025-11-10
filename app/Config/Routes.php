@@ -63,11 +63,43 @@ $routes->group('admin', ['filter' => 'group:admin'], function($routes) {
     $routes->post('pedidos/eliminar/(:num)', 'Admin\Pedidos::eliminar/$1');
     $routes->get('pedidos/imprimir/(:num)', 'Admin\Pedidos::imprimirTicket/$1');
 
-    // STOCK
-    $routes->get('stock', 'Admin\Stock::index');
-    $routes->get('stock/editar/(:num)', 'Admin\Stock::editar/$1');
-    $routes->post('stock/actualizar/(:num)', 'Admin\Stock::actualizar/$1');
-    $routes->post('stock/ajusteRapido', 'Admin\Stock::ajusteRapido');
+    // INVENTARIO
+    $routes->get('inventario', 'Admin\Inventario::index');
+    $routes->match(['get', 'post'], 'inventario/crear', 'Admin\Inventario::crear');
+    $routes->match(['get', 'post'], 'inventario/editar/(:num)', 'Admin\Inventario::editar/$1');
+    $routes->get('inventario/eliminar/(:num)', 'Admin\Inventario::eliminar/$1');
+    $routes->post('inventario/movimiento/(:num)', 'Admin\Inventario::movimiento/$1');
+
+    // CAJA CHICA
+    $routes->get('caja-chica', 'Admin\CajaChica::index');
+    $routes->get('caja-chica/ver/(:segment)', 'Admin\CajaChica::ver/$1');
+    $routes->post('caja-chica/agregar', 'Admin\CajaChica::agregar');
+    $routes->match(['get', 'post'], 'caja-chica/editar/(:num)', 'Admin\CajaChica::editar/$1');
+    $routes->get('caja-chica/eliminar/(:num)', 'Admin\CajaChica::eliminar/$1');
+    $routes->get('caja-chica/archivo', 'Admin\CajaChica::archivo');
+    $routes->get('caja-chica/imprimir/(:segment)', 'Admin\CajaChica::imprimir/$1');
+
+    // CUPONES
+    $routes->get('cupones', 'Admin\Cupones::index');
+    $routes->get('cupones/crear', 'Admin\Cupones::crear');
+    $routes->post('cupones/guardar', 'Admin\Cupones::guardar');
+    $routes->get('cupones/editar/(:num)', 'Admin\Cupones::editar/$1');
+    $routes->post('cupones/actualizar/(:num)', 'Admin\Cupones::actualizar/$1');
+    $routes->post('cupones/eliminar/(:num)', 'Admin\Cupones::eliminar/$1');
+    $routes->post('cupones/toggleEstado/(:num)', 'Admin\Cupones::toggleEstado/$1');
+
+    // ANALYTICS
+    $routes->get('analytics', 'Admin\Analytics::index');
+    $routes->get('analytics/exportar', 'Admin\Analytics::exportar');
+
+    // CAJA
+    $routes->get('caja', 'Admin\Caja::index');
+    $routes->post('caja/abrir', 'Admin\Caja::abrir');
+    $routes->post('caja/cerrar/(:num)', 'Admin\Caja::cerrar/$1');
+    $routes->post('caja/registrarIngreso', 'Admin\Caja::registrarIngreso');
+    $routes->post('caja/registrarEgreso', 'Admin\Caja::registrarEgreso');
+    $routes->get('caja/historial', 'Admin\Caja::historial');
+    $routes->get('caja/ver/(:num)', 'Admin\Caja::ver/$1');
 
     // CUPONES
     $routes->get('cupones', 'Admin\Cupones::index');

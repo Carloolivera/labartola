@@ -1,3 +1,53 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+writable/logs/*.log
+writable/debugbar/*.json
+writable/cache/*
+writable/session/*
+
+# Composer
+vendor/bin/.phpunit
+vendor/phpunit
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Documentation
+*.md
+docs
+
+# Node (si usas)
+node_modules
+npm-debug.log
+
+# Environment
+.env.example
+=======
+>>>>>>> main
 .git
 .gitignore
 README.md
@@ -10,3 +60,7 @@ writable/debugbar/*
 writable/uploads/*
 vendor/
 node_modules/
+<<<<<<< HEAD
+=======
+>>>>>>> 51028a9be6c3ff3512e51dcc6885d422e227cd31
+>>>>>>> main
