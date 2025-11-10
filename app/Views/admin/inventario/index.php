@@ -86,7 +86,7 @@
                         <tbody>
                             <?php if (empty($items)): ?>
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">
+                                    <td colspan="7" class="text-center py-4 text-light">
                                         <i class="bi bi-inbox"></i> No hay items en el inventario
                                     </td>
                                 </tr>
@@ -105,10 +105,10 @@
                                         <td class="d-none d-md-table-cell text-light small"><?= esc($item['descripcion'] ?: '-') ?></td>
                                         <td class="text-center">
                                             <span class="badge <?= $stockBajo ? 'bg-danger' : 'bg-info' ?> fs-6">
-                                                <?= number_format($item['cantidad_actual'], 2) ?> <?= esc($item['unidad_medida']) ?>
+                                                <?= $item['cantidad_actual'] ?> <?= esc($item['unidad_medida']) ?>
                                             </span>
                                             <?php if (isset($item['cantidad_minima'])): ?>
-                                                <br><small class="text-muted">Min: <?= $item['cantidad_minima'] ?></small>
+                                                <br><small class="text-light">Min: <?= $item['cantidad_minima'] ?></small>
                                             <?php endif; ?>
                                         </td>
                                         <td class="d-none d-lg-table-cell text-light small"><?= esc($item['ubicacion'] ?: '-') ?></td>
@@ -185,7 +185,7 @@
                     <div class="mb-3">
                         <label for="cantidad" class="form-label">Cantidad</label>
                         <input type="number" class="form-control" id="cantidad" name="cantidad"
-                               step="0.01" min="0.01" required>
+                               step="1" min="1" required>
                     </div>
 
                     <div class="mb-3">
@@ -228,7 +228,7 @@ function guardarMovimiento() {
     const motivo = document.getElementById('motivo').value;
 
     if (!cantidad || cantidad <= 0) {
-        alert('Por favor ingrese una cantidad válida');
+        showToast('Por favor ingrese una cantidad válida', 'warning');
         return;
     }
 
@@ -244,16 +244,16 @@ function guardarMovimiento() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
+            showToast(data.message, 'success');
             modalMovimiento.hide();
-            location.reload();
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error: ' + data.message);
+            showToast('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error al procesar la solicitud');
+        showToast('Error al procesar la solicitud', 'error');
     });
 }
 </script>

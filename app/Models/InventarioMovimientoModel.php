@@ -18,7 +18,7 @@ class InventarioMovimientoModel extends Model
     protected bool $updateOnlyChanged = true;
 
     protected array $casts = [
-        'cantidad' => 'float',
+        'cantidad' => 'int',
     ];
     protected array $castHandlers = [];
 
@@ -26,7 +26,7 @@ class InventarioMovimientoModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $updatedField  = ''; // No hay updated_at en esta tabla
     protected $deletedField  = 'deleted_at';
 
     // Validation

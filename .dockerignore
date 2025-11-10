@@ -1,4 +1,6 @@
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 # Git
 .git
 .gitignore
@@ -45,6 +47,7 @@ npm-debug.log
 # Environment
 .env.example
 =======
+>>>>>>> main
 .git
 .gitignore
 README.md
@@ -57,4 +60,7 @@ writable/debugbar/*
 writable/uploads/*
 vendor/
 node_modules/
+<<<<<<< HEAD
+=======
 >>>>>>> 51028a9be6c3ff3512e51dcc6885d422e227cd31
+>>>>>>> main

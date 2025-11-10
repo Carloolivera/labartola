@@ -14,6 +14,8 @@
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
       "Bash(docker-compose ps:*)",
       "Bash(docker-compose restart:*)",
       "Bash(docker-compose logs:*)",
@@ -24,6 +26,7 @@
       "Bash(php spark make:migration:*)",
       "Bash(php spark migrate:*)"
 =======
+>>>>>>> main
       "Bash(if [ -f .env ])",
       "Bash(then grep -A2 \"GOOGLE_CLIENT\" .env)",
       "Bash(else echo \"Archivo .env no existe\")",
@@ -51,7 +54,10 @@
       "Bash(docker exec:*)",
       "Bash(docker logs:*)",
       "Bash(grep:*)"
+<<<<<<< HEAD
+=======
 >>>>>>> 51028a9be6c3ff3512e51dcc6885d422e227cd31
+>>>>>>> main
     ],
     "deny": [],
     "ask": []

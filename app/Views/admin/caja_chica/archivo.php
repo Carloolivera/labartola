@@ -34,7 +34,7 @@
                         <tbody>
                             <?php if (empty($fechas)): ?>
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">
+                                    <td colspan="3" class="text-center py-4 text-light">
                                         <i class="bi bi-inbox"></i> No hay registros en el archivo
                                     </td>
                                 </tr>
