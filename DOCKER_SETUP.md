@@ -1,18 +1,41 @@
 # Configuración de Docker para La Bartola
 
-Este proyecto ahora está completamente dockerizado con PHP 8.2, Apache, MySQL 8.0 y phpMyAdmin.
+Este proyecto está completamente dockerizado con PHP 8.2, Apache, MySQL 8.0 y phpMyAdmin. **Ya no necesitas usar `php spark serve`** - Docker maneja todo.
 
-## Requisitos Previos
+## 🚀 Inicio Rápido
+
+### Opción 1: Usando los scripts (Recomendado)
+
+```bash
+# Linux/Mac
+./docker-start.sh
+
+# Windows (Git Bash)
+bash docker-start.sh
+```
+
+### Opción 2: Comandos manuales
+
+```bash
+docker-compose up -d --build
+```
+
+## ⚙️ Requisitos Previos
 
 - Docker Desktop instalado y corriendo
-- Git Bash o terminal compatible
+- Git Bash o terminal compatible (para Windows)
 
-## Estructura de Docker
+## 📁 Estructura de Docker
 
 ```
 labartola/
 ├── docker-compose.yml          # Configuración de servicios
 ├── Dockerfile                  # Imagen de PHP + Apache
+├── .env                        # Variables de entorno (NO subir a git)
+├── .env.example                # Plantilla de variables de entorno
+├── docker-start.sh             # Script de inicio rápido
+├── docker-stop.sh              # Script para detener servicios
+├── docker-logs.sh              # Script para ver logs
 ├── docker/
 │   ├── apache/
 │   │   └── 000-default.conf   # Configuración de Apache
@@ -21,109 +44,259 @@ labartola/
 └── .dockerignore              # Archivos excluidos del build
 ```
 
-## Servicios Configurados
+## 🐳 Servicios Configurados
 
 ### 1. MySQL (labartola_mysql)
-- Puerto: `3307` (host) → `3306` (contenedor)
-- Usuario: `root`
-- Password: `root_password_2024`
-- Base de datos: `labartola`
-- Volumen persistente: `db_data`
+- **Puerto**: `3306` (host) → `3306` (contenedor)
+- **Usuario**: `labartola_user`
+- **Password**: `root_password_2024`
+- **Base de datos**: `labartola`
+- **Volumen persistente**: `db_data`
 
-### 2. Web (labartola_web)
-- Puerto: `8080` (host) → `80` (contenedor)
-- PHP: 8.2 con Apache
-- Extensiones: mysqli, pdo, pdo_mysql, zip, gd, intl
-- mod_rewrite habilitado
+### 2. Web (labartola_web) - **PHP + Apache**
+- **Puerto**: `8080` (host) → `80` (contenedor)
+- **PHP**: 8.2 con Apache
+- **Extensiones**: mysqli, pdo, pdo_mysql, zip, gd, intl
+- **mod_rewrite**: Habilitado para URLs limpias
+- **DocumentRoot**: `/var/www/html/public`
 
 ### 3. phpMyAdmin (labartola_phpmyadmin)
-- Puerto: `8088`
-- Acceso: http://localhost:8088
+- **Puerto**: `8088`
+- **Acceso**: http://localhost:8088
+- **Usuario**: `labartola_user`
+- **Password**: `root_password_2024`
 
-## Comandos de Docker
+## 🎯 Acceso a la Aplicación
 
-### 1. Bajar contenedores actuales (si existen)
+Una vez levantados los contenedores:
+
+- **🌐 Aplicación Web**: http://localhost:8080
+- **🗄️ phpMyAdmin**: http://localhost:8088
+- **💾 MySQL** (desde host): `localhost:3306`
+
+## 📝 Scripts Disponibles
+
+### Iniciar servicios
 ```bash
-cd C:\Dev\labartola
-docker-compose down
+./docker-start.sh
 ```
+Construye y levanta todos los contenedores. Muestra las URLs disponibles.
 
-### 2. Eliminar volúmenes viejos (CUIDADO: esto borra la base de datos)
+### Detener servicios
 ```bash
-docker volume rm labartola_db_data
-# o si el volumen se llama diferente:
-docker volume ls
-docker volume rm <nombre_del_volumen>
+./docker-stop.sh
 ```
+Detiene todos los contenedores sin borrar datos.
 
-### 3. Construir y levantar los contenedores
+### Ver logs en tiempo real
 ```bash
-docker-compose up -d --build
+./docker-logs.sh
 ```
+Muestra los logs de todos los servicios. Presiona `Ctrl+C` para salir.
 
-### 4. Ver logs en tiempo real
-```bash
-# Todos los servicios
-docker-compose logs -f
+## 🛠️ Comandos Útiles de Docker
 
-# Solo web
-docker-compose logs -f web
-
-# Solo MySQL
-docker-compose logs -f mysql
-```
-
-### 5. Verificar que los contenedores están corriendo
+### Ver estado de contenedores
 ```bash
 docker-compose ps
 ```
 
-### 6. Acceder al contenedor web
-```bash
-docker exec -it labartola_web bash
-```
-
-### 7. Ejecutar comandos de CodeIgniter dentro del contenedor
-```bash
-# Entrar al contenedor
-docker exec -it labartola_web bash
-
-# Dentro del contenedor:
-php spark migrate              # Correr migraciones (si es necesario)
-php spark db:seed UserSeeder   # Seeders
-php spark list                 # Ver comandos disponibles
-```
-
-### 8. Reiniciar servicios
+### Reiniciar servicios
 ```bash
 # Reiniciar todo
 docker-compose restart
 
 # Reiniciar solo web
 docker-compose restart web
+
+# Reiniciar solo MySQL
+docker-compose restart mysql
 ```
 
-### 9. Detener contenedores (sin borrar datos)
+### Acceder al contenedor web
 ```bash
-docker-compose stop
+docker exec -it labartola_web bash
 ```
 
-### 10. Detener y eliminar contenedores
+### Ejecutar comandos de CodeIgniter
+```bash
+# Desde fuera del contenedor
+docker exec -it labartola_web php spark list
+docker exec -it labartola_web php spark migrate
+docker exec -it labartola_web php spark db:seed UserSeeder
+
+# Desde dentro del contenedor
+docker exec -it labartola_web bash
+php spark list
+php spark migrate
+```
+
+### Ver logs de servicios específicos
+```bash
+# Web (Apache + PHP)
+docker-compose logs -f web
+
+# MySQL
+docker-compose logs -f mysql
+
+# phpMyAdmin
+docker-compose logs -f phpmyadmin
+```
+
+### Detener y eliminar todo (incluyendo volúmenes)
+```bash
+# CUIDADO: Esto borra la base de datos
+docker-compose down -v
+```
+
+## ⚙️ Configuración con .env
+
+El archivo `.env` contiene todas las configuraciones importantes:
+
+```env
+# Configuración de la aplicación
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost:8080/'
+app.indexPage = ''
+
+# Configuración de la base de datos
+database.default.hostname = mysql
+database.default.database = labartola
+database.default.username = labartola_user
+database.default.password = root_password_2024
+
+# Puertos de Docker
+WEB_PORT = 8080
+DB_PORT = 3306
+PHPMYADMIN_PORT = 8088
+```
+
+**Nota**: El archivo `.env` está en `.gitignore` para proteger credenciales. Usa `.env.example` como plantilla.
+
+## 🔧 Cambiar Puertos
+
+Si algún puerto está ocupado, edita el archivo `.env`:
+
+```env
+# Cambiar puerto web de 8080 a 8081
+WEB_PORT = 8081
+
+# Cambiar puerto MySQL de 3306 a 3307
+DB_PORT = 3307
+
+# Cambiar puerto phpMyAdmin de 8088 a 8089
+PHPMYADMIN_PORT = 8089
+```
+
+Luego reinicia los servicios:
 ```bash
 docker-compose down
+docker-compose up -d
 ```
 
-## Acceso a la Aplicación
+## 🐛 Solución de Problemas
 
-Una vez levantados los contenedores:
+### El puerto está ocupado
+```bash
+# Ver qué proceso usa el puerto 8080 (Linux/Mac)
+lsof -i :8080
 
-- **Aplicación Web**: http://localhost:8080
-- **phpMyAdmin**: http://localhost:8088
-- **MySQL** (desde host): `localhost:3307`
+# Ver qué proceso usa el puerto 8080 (Windows PowerShell)
+Get-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess
 
-## Configuración de Base de Datos
+# Matar proceso en Windows
+Stop-Process -Id <PID> -Force
 
-El archivo `docker/mysql/init.sql` se ejecuta automáticamente cuando creas el contenedor de MySQL por primera vez. Este archivo crea todas las tablas necesarias:
+# O cambiar el puerto en .env
+WEB_PORT = 8081
+```
+
+### Docker no está corriendo
+```bash
+# Verificar si Docker está corriendo
+docker info
+
+# Si no está corriendo, inicia Docker Desktop
+```
+
+### La base de datos no se inicializa
+```bash
+# Eliminar volúmenes y recrear todo
+docker-compose down -v
+docker-compose up -d --build
+```
+
+### Errores de permisos en writable/
+```bash
+docker exec -it labartola_web bash
+chown -R www-data:www-data /var/www/html/writable
+chmod -R 775 /var/www/html/writable
+exit
+```
+
+### Ver errores de Apache
+```bash
+docker exec -it labartola_web tail -f /var/log/apache2/error.log
+```
+
+### Ver errores de PHP
+```bash
+docker exec -it labartola_web tail -f /var/www/html/writable/logs/log-*.log
+```
+
+### La aplicación muestra 404
+1. Verifica que mod_rewrite esté habilitado (ya está en el Dockerfile)
+2. Verifica que `app.indexPage` esté vacío en `.env`
+3. Reinicia el contenedor web: `docker-compose restart web`
+
+## 💾 Backup y Restauración
+
+### Exportar base de datos
+```bash
+docker exec labartola_mysql mysqldump \
+  -ulabartola_user \
+  -proot_password_2024 \
+  labartola > backup_$(date +%Y%m%d_%H%M%S).sql
+```
+
+### Importar base de datos
+```bash
+docker exec -i labartola_mysql mysql \
+  -ulabartola_user \
+  -proot_password_2024 \
+  labartola < backup.sql
+```
+
+## 🚀 Desarrollo
+
+### Ventajas de usar Docker:
+✅ **Hot reload**: Los cambios en el código se reflejan inmediatamente
+✅ **No necesitas XAMPP/WAMP**: Todo está contenido en Docker
+✅ **Mismo ambiente para todos**: Evita el "en mi máquina funciona"
+✅ **Fácil de iniciar**: Un solo comando levanta todo
+✅ **URLs limpias**: mod_rewrite configurado automáticamente
+
+### Flujo de trabajo:
+1. Inicia Docker: `./docker-start.sh`
+2. Edita tu código en tu editor favorito
+3. Recarga el navegador para ver cambios
+4. Cuando termines: `./docker-stop.sh`
+
+### Ejecutar migraciones y seeders:
+```bash
+# Ejecutar todas las migraciones
+docker exec -it labartola_web php spark migrate
+
+# Ejecutar un seeder específico
+docker exec -it labartola_web php spark db:seed UserSeeder
+
+# Rollback de migraciones
+docker exec -it labartola_web php spark migrate:rollback
+```
+
+## 📊 Base de Datos
+
+El archivo `docker/mysql/init.sql` se ejecuta automáticamente al crear el contenedor MySQL por primera vez. Crea las siguientes tablas:
 
 - users
 - platos
@@ -134,61 +307,22 @@ El archivo `docker/mysql/init.sql` se ejecuta automáticamente cuando creas el c
 - notificaciones
 - caja_turnos
 - caja_movimientos
+- inventario_productos
+- inventario_movimientos
 - migrations
 
-## Solución de Problemas
+## 🔒 Seguridad
 
-### El puerto 8080 está ocupado
-```bash
-# Matar procesos en Windows
-powershell "Get-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess | Stop-Process -Force"
+- ⚠️ **Nunca subas el archivo `.env` a git** (ya está en `.gitignore`)
+- 🔑 Cambia las contraseñas en producción
+- 🔐 Usa contraseñas fuertes para producción
+- 🌐 No expongas los puertos de base de datos en producción
 
-# O cambiar el puerto en docker-compose.yml
-ports:
-  - "8081:80"  # Cambia 8080 por 8081
-```
+## 📌 Notas Importantes
 
-### La base de datos no se inicializa
-```bash
-# Eliminar volúmenes y recrear
-docker-compose down -v
-docker-compose up -d --build
-```
-
-### Permisos en carpeta writable
-```bash
-# Dentro del contenedor
-docker exec -it labartola_web bash
-chown -R www-data:www-data /var/www/html/writable
-chmod -R 775 /var/www/html/writable
-```
-
-### Ver errores de Apache
-```bash
-docker exec -it labartola_web tail -f /var/log/apache2/error.log
-```
-
-## Desarrollo
-
-El directorio del proyecto está montado como volumen en el contenedor, por lo que:
-
-✅ Los cambios en el código se reflejan inmediatamente (no necesitas rebuildar)
-✅ La carpeta `writable` tiene permisos adecuados
-✅ Apache está configurado con mod_rewrite para las rutas de CodeIgniter
-
-## Backup de Base de Datos
-
-```bash
-# Exportar
-docker exec labartola_mysql mysqldump -uroot -proot_password_2024 labartola > backup.sql
-
-# Importar
-docker exec -i labartola_mysql mysql -uroot -proot_password_2024 labartola < backup.sql
-```
-
-## Notas Importantes
-
-1. **Primera vez**: El contenedor MySQL tarda unos segundos en inicializarse
+1. **Primera vez**: El contenedor MySQL tarda ~10 segundos en inicializarse
 2. **Healthcheck**: El servicio web espera a que MySQL esté listo antes de iniciar
 3. **Persistencia**: Los datos de MySQL se guardan en el volumen `db_data`
 4. **Red**: Todos los contenedores están en la red `labartola_network`
+5. **No más spark serve**: Apache maneja todo el enrutamiento
+6. **Cambios inmediatos**: No necesitas rebuildar para ver cambios de código

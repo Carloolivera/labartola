@@ -11,12 +11,12 @@ class Database extends Config
 
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => '',
-        'password'     => '',
-        'database'     => '',
-        'DBDriver'     => 'MySQLi',
-        'DBPrefix'     => '',
+        'hostname'     => env('database.default.hostname', 'localhost'),
+        'username'     => env('database.default.username', ''),
+        'password'     => env('database.default.password', ''),
+        'database'     => env('database.default.database', ''),
+        'DBDriver'     => env('database.default.DBDriver', 'MySQLi'),
+        'DBPrefix'     => env('database.default.DBPrefix', ''),
         'pConnect'     => false,
         'DBDebug'      => (ENVIRONMENT !== 'production'),
         'charset'      => 'utf8mb4',
@@ -26,7 +26,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 3306,
+        'port'         => (int) env('database.default.port', 3306),
         'numberNative' => false,
         'foundRows'    => false,
         'dateFormat'   => [

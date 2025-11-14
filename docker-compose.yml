@@ -5,17 +5,46 @@ services:
     container_name: labartola_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password_2024
-      MYSQL_DATABASE: labartola
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root_password_2024}
+      MYSQL_DATABASE: ${DB_NAME:-labartola}
+      MYSQL_USER: ${DB_USERNAME:-labartola_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root_password_2024}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password_2024"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-root_password_2024}"]
       timeout: 5s
       retries: 10
+    networks:
+      - labartola_network
+
+  # Servicio web (PHP + Apache)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labartola_web
+    restart: always
+    environment:
+      - CI_ENVIRONMENT=${CI_ENVIRONMENT:-development}
+      - database.default.hostname=mysql
+      - database.default.database=${DB_NAME:-labartola}
+      - database.default.username=${DB_USERNAME:-labartola_user}
+      - database.default.password=${DB_PASSWORD:-root_password_2024}
+      - database.default.DBDriver=MySQLi
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - .:/var/www/html
+      - ./writable:/var/www/html/writable
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - labartola_network
 
   # Servicio phpMyAdmin (opcional)
   phpmyadmin:
@@ -24,12 +53,18 @@ services:
     restart: always
     environment:
       PMA_HOST: mysql
-      PMA_USER: root
-      PMA_PASSWORD: root_password_2024
+      PMA_USER: ${DB_USERNAME:-labartola_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-root_password_2024}
     ports:
-      - "8088:80"
+      - "${PHPMYADMIN_PORT:-8088}:80"
     depends_on:
       - mysql
+    networks:
+      - labartola_network
 
 volumes:
   db_data:
+
+networks:
+  labartola_network:
+    driver: bridge
